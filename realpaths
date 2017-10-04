@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+realpath.location()  { realpath.resolve "$1"; realpath.join "$REPLY" ".."; }
+realpath.absolute()  { realpath.resolve "$1"; realpath.join "$REPLY"; }
+
+realpath.resolve() {
+    local target
+    while [[ -L "$1" ]] && target=$(readlink -- "$1"); do
+        realpath.dirname "$1"
+        # Resolve symlink target relative to symlink's directory
+        [[ $REPLY != . && $target != /* ]] && REPLY=$REPLY/$target || REPLY=$target
+        # Break out if we found a symlink loop
+        for target; do [[ $REPLY == "$target" ]] && break 2; done
+        # Add current result to the loop-detect list and tail-recurse
+        set -- "$REPLY" "$@"
+    done
+    REPLY="$1"
+}
+
+
+realpath.join() {
+    set -- "$PWD" "$@"
+    while (($#>1)); do
+        case $2 in
+        /*) shift ;;                        # absolute paths don't get prefixed
+        *)  set -- "${1%/}/$2" "${@:3}" ;;  # join everything else
+        esac
+    done
+    IFS=/ eval 'set -- ${1}'    # normalize the path by splitting on /
+    set -- "${1:-/}" "${@:2}"   # and ensuring first element is a /
+    while (($#>1)); do
+        case $2 in
+        ''|.)  set -- "$1" "${@:3}" ;;  # no-op path
+        ..) realpath.dirname "$1"; set -- "$REPLY" "${@:3}" ;;
+        *)  set -- "${1%/}${2:+/$2}" "${@:3}" ;;
+        esac
+    done
+    REPLY="$1"
+}
+
+
+realpath.dirname() {
+    while [[ $1 == *?/ ]]; do set -- "${1%/}"; done         # strip ending /
+    REPLY="${1%/*}"                                         # remove basename
+    [[ $REPLY == "$1" ]] && REPLY=. || REPLY=${REPLY:-/}    # handle . and /
+    while [[ $REPLY == *?/ ]]; do REPLY=${REPLY%/}; done    # strip ending /
+}
+
+realpath.basename() {
+    while [[ $1 == *?/ ]]; do set -- "${1%/}"; done
+    REPLY="${1##*/}"; if [[ "$1"  && ! "$REPLY" ]]; then REPLY=/; fi
+}
+
+
+realpath.canonical() {
+    local OLDPWD target=""
+    realpath.resolve "$1"; set -- "$REPLY"
+    realpath.basename "$1"; target=$REPLY
+    realpath.dirname "$1";
+    [[ $REPLY != "$1" ]] && realpath.canonical "$REPLY";
+    realpath.join "$REPLY" "$target";
+}
+
