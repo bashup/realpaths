@@ -2,13 +2,13 @@
 
 Sadly, it's hard to find a portable way to get the "real path" of a file, and shell-based emulations of `realpath ` and `readlink -f` are usually quite slow compared to the real thing, and don't return *quite* the same results.  (Dealing with missing elements, symlink loops, and the like can also be a challenge, even with the "real" `readlink` or `realpath`!)
 
-So, this module is a thorough implementation of symlink resolution and path canonicalization using plain, portable `readlink` with no options.  It is about as fast as `readlink -f` when there is only one symlink to follow, and *enormously* faster when the target isn't a symlink.  (It's slower on symlink chains, though.)
+So, this module is a thorough implementation of symlink resolution and path canonicalization using plain, portable `readlink` with no options.  Its symlink resolution is about as fast as `readlink -f` when there is only one symlink to follow, and *enormously* faster when the target isn't a symlink.  (It's slower on symlink chains, though.)
 
-All of this module's functions output their results to the bash `REPLY` variable: this is done to avoid the need for subshells.  All functions return success, *always*, as they are designed to provide meaningful results even in the presence of missing, looping, or inaccessible files, symlinks, or directories.
+To avoid the need for subshells, all of this module's functions output a single path result via the bash `REPLY` variable.  All functions return success, *always*, as they are designed to provide meaningful results even in the presence of missing, looping, or inaccessible files, symlinks, or directories.
 
 Most of this module's functions also return absolute, well-formed paths: that is, paths that begin with `/` and contain no `.`, `..` or empty components.  (The exceptions are `realpath.follow`, `realpath.dirname`, and `realpath.basename`, which can return relative paths.)
 
-(**Note:** unlike their operating system counterparts, these functions do *not* accept multiple arguments (except for `realpath.absolute`), do *not* take option parameters, and return exactly one path as a result.  Do not pass `--` to them or expect to get multiple results for multiple arguments!)
+(**Note:** unlike their operating system counterparts, these functions do *not* accept options, and always return exactly **one** path as a result.  Do not pass `--` to them or expect to get multiple results for multiple arguments!)
 
 ### Installation, Requirements And Use
 
@@ -20,7 +20,7 @@ The code's only extenal requirement is `readlink`, which is used only to resolve
 
 #### realpath.location
 
-Sets `REPLY` to the absolute, well-formed path of a physical directory that contains (or *would* contain) the supplied path.  (Equivalent to the `dirname` of  `realpath.absolute "$1"`.) Always succeeds.
+Sets `REPLY` to the absolute, well-formed path of a physical directory that contains (or *would* contain) the supplied path.  (Equivalent to the `dirname` of  `realpath.resolved "$1"`.) Always succeeds.
 
 (Pass this function `"$BASH_SOURCE"` to get the directory of the currently-executing file, or `"$0"` to get the directory of the current main script.)
 
@@ -32,7 +32,7 @@ Sets `REPLY` to the absolute, well-formed path of `$1`, with symlinks in the fin
 
 Sets `REPLY` to the first non-symlink (or last accessible, non-looping symlink) in the symlink chain beginning at `$1`.  Replies with the unchanged `$1` if it is not a symlink.  Always succeeds.  The result is not a symlink unless it is inaccessible or part of a symlink cycle.  (Note: the result *can* be a relative path, if both `$1` and all the symlinks in the chain are relative.  Use `realpath.resolved` instead if you want a guaranteed-absolute path.)
 
-### Path Manipulation
+### Path String Manipulation
 
 #### realpath.absolute *[paths...]*
 
@@ -40,7 +40,7 @@ Sets `REPLY` to the absolute, well-formed combination of the supplied path(s). A
 
 Each path may be absolute or relative.  The resulting path is the combination of the *last* absolute path in the list supplied, combined with any relative paths that follow it.  If no absolute paths are given, the relative paths are processed relative to `$PWD` -- so passing zero arguments simply returns `$PWD`.
 
-Relative path parts are resolved *logically* rather than physically.  That is to say, `..` is processed by removing elements from the path string, rather than by inspecting the filesystem.  (So symlinks are not processed in any way, and the existence or accessibility of the files and directories is irrelevant: with the exception of defaulting to `$PWD`, the result is purely done by string manipulation.)
+Relative path parts are resolved *logically* rather than physically.  That is to say, `..` is processed by removing elements from the path string, rather than by inspecting the filesystem.  (So symlinks are not processed in any way, and the existence or accessibility of the files and directories is irrelevant: with the exception of defaulting to `$PWD`, the result is obtained solely via string manipulation of the supplied paths.)
 
 #### realpath.dirname
 
