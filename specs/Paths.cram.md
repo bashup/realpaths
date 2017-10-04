@@ -4,7 +4,7 @@ realpath.dirname and realpath.basename should produce the same results as their 
 
     $ @echo() { "${@:2}" && echo "$REPLY"; }
     $ @assert() { "${@:2}" && [[ $REPLY == "$1" ]] || echo "${*:2}: expected '$1', got '$REPLY'"; }
-    $ @compare() { @assert "$("$1" "$2")" realpath.$1 "$2"; }
+    $ @compare() { @assert "$("$1" "${@:2}")" realpath.$1 "${@:2}"; }
     $ @check() { @compare basename "$1"; @compare dirname "$1"; }
     $ source "$TESTDIR/../realpaths"
 
@@ -35,6 +35,37 @@ Ignores arguments to the left of an absolute path:
     $ @assert /etc realpath.absolute /etc
     $ @assert /etc/z/xq realpath.absolute x y z /etc/z q/../xq
 
+## realpath.relative path dir
+
+Outputs the relative path from dir to path:
+
+    $ @assert y             realpath.relative y .
+    $ @assert y             realpath.relative x/y x
+    $ @assert ../y          realpath.relative y x
+    $ @assert ../y/z        realpath.relative a/y/z a/x
+    $ @assert ../../y       realpath.relative y a/x
+    $ @assert ../../../y    realpath.relative y a/b/x
+
+Avoids redundancy for common path elements:
+
+    $ @assert .           realpath.relative y y
+    $ @assert ..          realpath.relative y y/x
+    $ @assert ../..       realpath.relative y y/z/x
+    $ @assert ../../..    realpath.relative /y /y/z/x/a
+
+Produces the same outputs as python's os.path.relpath:
+
+    $ relative() { python -c 'import sys,os.path; sys.stdout.write(os.path.relpath(*sys.argv[1:3]))' "$@"; }
+    $ @compare relative /q         /q/r/s
+    $ @compare relative /q/r       /q/r/s
+    $ @compare relative /q/r/s     /q/r/s
+    $ @compare relative /q/r/s/t   /q/r/s
+    $ @compare relative /q/r/s/t/u /q/r/s
+    $ @compare relative /q/r/t     /q/r/s
+    $ @compare relative /q/r/t/u   /q/r/s
+    $ @compare relative /q/t       /q/r/s
+    $ @compare relative /q/t/u     /q/r/s
+    $ @compare relative /t/u/v     /q/r/s
 
 ## realpath.follow
 

@@ -2,4 +2,4 @@
 
 import: cram                  # run tests using the "cram" functional test tool
 import: entr-watch            # watch files and re-run tests or other commands
-
+import: shell-console

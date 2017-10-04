@@ -42,6 +42,14 @@ Each path may be absolute or relative.  The resulting path is the combination of
 
 Relative path parts are resolved *logically* rather than physically.  That is to say, `..` is processed by removing elements from the path string, rather than by inspecting the filesystem.  (So symlinks are not processed in any way, and the existence or accessibility of the files and directories is irrelevant: with the exception of defaulting to `$PWD`, the result is obtained solely via string manipulation of the supplied paths.)
 
+#### realpath.relative *path [basedir]*
+
+Sets `REPLY` to the shortest relative path from *basedir* to *path*.  *basedir* defaults to `$PWD` if not supplied.  Always succeeds.
+
+The *path* and *basedir* are preprocessed with `realpath.absolute`, so they can be relative paths, or absolute ones containing relative components.  (The result is identical to calling Python's `os.path.relpath` function with the same arguments, but is much faster than even the fork to start Python would be.)
+
+The main use case for this function is portably creating relative symlinks without needing `ln --relative` or `realpath --relative-to`.  Specifically, if you are doing `ln -s somepath somedir/link`, you can make it relative using `realpath.relative somepath somedir; ln -s "$REPLY" somedir/link`.
+
 #### realpath.dirname
 
 Sets `REPLY` to the directory name of `$1`, always returning success.  Produces the *exact* same results as `REPLY=$(dirname -- "$1")` except much, *much* faster.  Always succeeds.

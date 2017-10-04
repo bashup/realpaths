@@ -61,3 +61,13 @@ realpath.canonical() {
     realpath.absolute "$REPLY" "$target";   # combine canon parent w/basename
 }
 
+realpath.relative() {
+    local target=""
+    realpath.absolute "$1"; set -- "$REPLY" "${@:2}"; realpath.absolute "${2-$PWD}" X
+    while realpath.dirname "$REPLY"; [[ "$1" != "$REPLY" && "$1" == "${1#${REPLY%/}/}" ]]; do
+        target=../$target
+    done
+    [[ $1 == "$REPLY" ]] && REPLY=${target%/} || REPLY="$target${1#${REPLY%/}/}"
+    REPLY=${REPLY:-.}
+}
+
