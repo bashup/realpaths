@@ -62,9 +62,9 @@ Sets `REPLY` to the basename of `$1`.  Produces the *exact* same results as `REP
 
 #### realpath.canonical
 
-Sets `REPLY` to the *fully canonicalized* form of `$1`, resolving symlinks in every part of the path where that can be done, roughly equivalent to `realpath -m` or `readlink -m`.   Always succeeds, but potentially quite slow, depending on how many directories are symlinks.
+Sets `REPLY` to the *fully canonicalized* form of `$1`, recursively resolving symlinks in every part of the path where that can be done, roughly equivalent to `realpath -m` or `readlink -m`.   Always succeeds, but potentially quite slow, depending on how many directories are symlinks.
 
-You don't really need this function unless you are trying to determine whether divergent paths lead to the "same" file: for use cases that don't involve comparing paths,  `realpath.absolute` should be sufficient.  (Note, too, that using canonical paths can result in user confusion, since they have to reconcile their inputs with your outputs.)
+You don't really need this function unless you are trying to determine whether divergent paths lead to the "same" file: for use cases that don't involve comparing paths,  `realpath.resolved` should be sufficient.  (Note, too, that using canonical paths can result in user confusion, since they have to reconcile their inputs with your outputs.)
 
 ## License
 
