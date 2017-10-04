@@ -12,7 +12,7 @@ Most of this module's functions also return absolute, well-formed paths: that is
 
 ### Installation And Use
 
-Copy and paste the code into your script, or place it on `PATH` and `source "$(command -v realpaths)"`.  You can install it on your `PATH` with [basher](https://github.com/basherpm/basher), using `basher install bashup/realpaths`.  The code is licensed CC0, so you are not required to add any attribution or copyright notices to your project.
+Copy and paste the [code](realpaths) into your script, or place it on `PATH` and `source "$(command -v realpaths)"`.  You can install it on your `PATH` with [basher](https://github.com/basherpm/basher), using `basher install bashup/realpaths`.  The code is licensed CC0, so you are not required to add any attribution or copyright notices to your project.
 
 ### Resolving Symlinks
 
