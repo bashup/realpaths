@@ -26,7 +26,7 @@ realpath.join() {
         *)  set -- "${1%/}/$2" "${@:3}" ;;  # join everything else
         esac
     done
-    IFS=/ eval 'set -- ${1}'    # normalize the path by splitting on /
+    IFS=/ eval 'set -- $1'    # normalize the path by splitting on /
     set -- "${1:-/}" "${@:2}"   # and ensuring first element is a /
     while (($#>1)); do
         case $2 in
@@ -53,11 +53,11 @@ realpath.basename() {
 
 
 realpath.canonical() {
-    local OLDPWD target=""
-    realpath.resolve "$1"; set -- "$REPLY"
-    realpath.basename "$1"; target=$REPLY
+    local target=""
+    realpath.resolve "$1"; set -- "$REPLY"  # $1 is now resolved
+    realpath.basename "$1"; target=$REPLY   # target = basename $1
     realpath.dirname "$1";
-    [[ $REPLY != "$1" ]] && realpath.canonical "$REPLY";
-    realpath.join "$REPLY" "$target";
+    [[ $REPLY != "$1" ]] && realpath.canonical "$REPLY"; # recurse unless root
+    realpath.join "$REPLY" "$target";       # combine canon parent w/basename
 }
 
