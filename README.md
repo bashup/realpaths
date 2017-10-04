@@ -10,6 +10,10 @@ Most of this module's functions also return absolute, well-formed paths: that is
 
 (**Note:** unlike their operating system counterparts, these functions do *not* accept multiple arguments (except for `realpath.join`), and do *not* take option parameters.  Do not pass `--` to them or expect to get multiple results for multiple arguments!)
 
+### Installation And Use
+
+Copy and paste the code into your script, or place it on `PATH` and `source "$(command -v realpaths)"`.  You can install it on your `PATH` with [basher](https://github.com/basherpm/basher), using `basher install bashup/realpaths`.  The code is licensed CC0, so you are not required to add any attribution or copyright notices to your project.
+
 ### Resolving Symlinks
 
 #### realpath.location
@@ -36,19 +40,27 @@ Arguments to the left of an absolute path argument are discarded (similar to Pyt
 
 All path components are resolved *logically* rather than physically: that is to say, `..` is processed by removing elements from the path string rather than by inspecting the filesystem.  (So symlinks are not processed in any way, and the existence or accessibility of the files and directories is irrelevant.)
 
-#### realpath.dirname *path*
+#### realpath.dirname
 
-Sets `REPLY` to the directory name of *path*, always returning success.  Produces the *exact* same results as `REPLY=$(dirname -- "$1")` except much, *much* faster.  Always succeeds.
+Sets `REPLY` to the directory name of `$1`, always returning success.  Produces the *exact* same results as `REPLY=$(dirname -- "$1")` except much, *much* faster.  Always succeeds.
 
-#### realpath.basename *path*
+#### realpath.basename
 
-Sets `REPLY` to the basename of *path*.  Produces the *exact* same results as `REPLY=$(basename -- "$1")` except much, *much* faster.
+Sets `REPLY` to the basename of `$1`.  Produces the *exact* same results as `REPLY=$(basename -- "$1")` except much, *much* faster.
 
 ### Determinining Canonical Paths
 
-#### realpath.canonical *path*
+#### realpath.canonical
 
-Sets `REPLY` to the *fully canonicalized* form of path, resolving symlinks in every part of the path where that can be done, roughly equivalent to `realpath -m` or `readlink -m`.   Always succeeds, but potentially quite slow, depending on how many directories are symlinks.
+Sets `REPLY` to the *fully canonicalized* form of `$1`, resolving symlinks in every part of the path where that can be done, roughly equivalent to `realpath -m` or `readlink -m`.   Always succeeds, but potentially quite slow, depending on how many directories are symlinks.
 
 You don't really need this function unless you are trying to determine whether divergent paths lead to the "same" file: for use cases that don't involve comparing paths,  `realpath.absolute` should be sufficient.  (Note, too, that using canonical paths can result in user confusion, since they have to reconcile their inputs with your outputs.)
 
+## License
+
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+  <a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/"><img src="https://licensebuttons.net/p/zero/1.0/80x15.png" style="border-style: none;" alt="CC0" /></a><br />
+  To the extent possible under law, <a rel="dct:publisher" href="https://github.com/pjeby"><span property="dct:title">PJ Eby</span></a>
+  has waived all copyright and related or neighboring rights to <span property="dct:title">bashup/realpaths</span>.
+This work is published from: <span property="vcard:Country" datatype="dct:ISO3166" content="US" about="https://github.com/bashup/realpaths">United States</span>.
+</p>
