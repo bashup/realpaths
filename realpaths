@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-realpath.location()  { realpath.resolve "$1"; realpath.join "$REPLY" ".."; }
-realpath.absolute()  { realpath.resolve "$1"; realpath.join "$REPLY"; }
+realpath.location()  { realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
+realpath.resolved()  { realpath.follow "$1"; realpath.absolute "$REPLY"; }
 
-realpath.resolve() {
+realpath.follow() {
     local target
     while [[ -L "$1" ]] && target=$(readlink -- "$1"); do
         realpath.dirname "$1"
@@ -18,7 +18,7 @@ realpath.resolve() {
 }
 
 
-realpath.join() {
+realpath.absolute() {
     set -- "$PWD" "$@"
     while (($#>1)); do
         case $2 in
@@ -54,10 +54,10 @@ realpath.basename() {
 
 realpath.canonical() {
     local target=""
-    realpath.resolve "$1"; set -- "$REPLY"  # $1 is now resolved
+    realpath.follow "$1"; set -- "$REPLY"   # $1 is now resolved
     realpath.basename "$1"; target=$REPLY   # target = basename $1
     realpath.dirname "$1";
     [[ $REPLY != "$1" ]] && realpath.canonical "$REPLY"; # recurse unless root
-    realpath.join "$REPLY" "$target";       # combine canon parent w/basename
+    realpath.absolute "$REPLY" "$target";   # combine canon parent w/basename
 }
 

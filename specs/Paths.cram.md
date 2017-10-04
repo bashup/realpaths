@@ -16,47 +16,47 @@ realpath.dirname and realpath.basename should produce the same results as their 
     > @check "$p1$p2$p3$p4$p5"
     > done; done; done; done; done
 
-## realpath.join
+## realpath.absolute
 
 Outputs PWD with no args, joins relative args to PWD, removes empty parts, and canonicalizes ./..:
 
-    $ @assert "$PWD" realpath.join
-    $ @assert "$PWD" realpath.join .
-    $ @assert "$PWD/x" realpath.join x
-    $ @assert "$PWD/x/y" realpath.join x y
-    $ @assert "$PWD/x/y" realpath.join x/z ../y
-    $ @assert "$PWD/x/y/z" realpath.join x y//z
-    $ @assert "$PWD/x/y/z" realpath.join x y '' z
-    $ @assert "$PWD/x/y/z" realpath.join x y '' z/.
-    $ @assert "$PWD/x/y/z" realpath.join x y '' z/. q .. r .. .. z
+    $ @assert "$PWD" realpath.absolute
+    $ @assert "$PWD" realpath.absolute .
+    $ @assert "$PWD/x" realpath.absolute x
+    $ @assert "$PWD/x/y" realpath.absolute x y
+    $ @assert "$PWD/x/y" realpath.absolute x/z ../y
+    $ @assert "$PWD/x/y/z" realpath.absolute x y//z
+    $ @assert "$PWD/x/y/z" realpath.absolute x y '' z
+    $ @assert "$PWD/x/y/z" realpath.absolute x y '' z/.
+    $ @assert "$PWD/x/y/z" realpath.absolute x y '' z/. q .. r .. .. z
 
 Ignores arguments to the left of an absolute path:
 
-    $ @assert /etc realpath.join /etc
-    $ @assert /etc/z/xq realpath.join x y z /etc/z q/../xq
+    $ @assert /etc realpath.absolute /etc
+    $ @assert /etc/z/xq realpath.absolute x y z /etc/z q/../xq
 
 
-## realpath.resolve
+## realpath.follow
 
 Returns first non-symlink:
 
-    $ @assert "x" realpath.resolve x
+    $ @assert "x" realpath.follow x
     $ ln -s y x
-    $ @assert "y" realpath.resolve x
+    $ @assert "y" realpath.follow x
     $ ln -s z y
-    $ @assert "z" realpath.resolve x
+    $ @assert "z" realpath.follow x
 
 or last symlink before recursion sets in:
 
     $ ln -s x z
-    $ @assert "z" realpath.resolve x
-    $ @assert "y" realpath.resolve z
-    $ @assert "x" realpath.resolve y
+    $ @assert "z" realpath.follow x
+    $ @assert "y" realpath.follow z
+    $ @assert "x" realpath.follow y
 
 and relative-pathed symlinks are normalized to the symlink directory
 
     $ mkdir q
-    $ @assert "q/../z" realpath.resolve q/../x
+    $ @assert "q/../z" realpath.follow q/../x
     $ rm x y z; rmdir q
 
 ## realpath.canonical
@@ -115,7 +115,7 @@ Absolute links and directories:
 
 ### realpath.location
 
-Returns the absolute (but not canonical) location of the directory physically containing its target.  Is equivalent to `realpath.join` if target isn't a symlink:
+Returns the absolute (but not canonical) location of the directory physically containing its target.  Is equivalent to `realpath.absolute` if target isn't a symlink:
 
     $ @assert "$PWD"       realpath.location x
     $ @assert "$PWD"       realpath.location z
