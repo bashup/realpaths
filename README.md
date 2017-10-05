@@ -12,9 +12,9 @@ Most of this module's functions also return absolute, well-formed paths: that is
 
 ### Installation, Requirements And Use
 
-Copy and paste the [code](realpaths) into your script, or place it on `PATH` and `source "$(command -v realpaths)"`.  You can install it on your `PATH` with [basher](https://github.com/basherpm/basher), using `basher install bashup/realpaths`.  The code is licensed CC0, so you are not required to add any attribution or copyright notices to your project.
+Copy and paste the [code](realpaths) into your script, or place it on `PATH` and `source realpaths`.  (if you have [basher](https://github.com/basherpm/basher), you can `basher install bashup/realpaths` to get it installed on your `PATH`.)  The code is licensed CC0, so you are not required to add any attribution or copyright notices to your project.
 
-The code's only extenal requirement is `readlink`, which is used only to resolve a single symlink level, and therefore can be a GNU, BSD, or OS X readlink implementation.
+The code's only extenal requirement is `readlink`, which is used only to resolve a single symlink level with no special options, and therefore can be a GNU, BSD, or OS X readlink implementation.
 
 ### Resolving Symlinks
 
@@ -62,9 +62,9 @@ Sets `REPLY` to the basename of `$1`.  Produces the *exact* same results as `REP
 
 #### realpath.canonical
 
-Sets `REPLY` to the *fully canonicalized* form of `$1`, recursively resolving symlinks in every part of the path where that can be done, roughly equivalent to `realpath -m` or `readlink -m`.   Always succeeds, but potentially quite slow, depending on how many directories are symlinks.
+Sets `REPLY` to the *fully canonicalized* form of `$1`, recursively resolving symlinks in every part of the path where that can be done, roughly equivalent to `realpath -m` or `readlink -m`.   Always succeeds, but potentially rather slow, depending on how many directories are symlinks.
 
-You don't really need this function unless you are trying to determine whether divergent paths lead to the "same" file: for use cases that don't involve comparing paths,  `realpath.resolved` should be sufficient.  (Note, too, that using canonical paths can result in user confusion, since they have to reconcile their inputs with your outputs.)
+You don't really need this function unless you are trying to determine whether divergent paths lead to the "same" file.  For use cases that don't involve comparing paths, `realpath.resolved` should be sufficient, or perhaps even `realpath.absolute`.  (Note, too, that using canonical paths can result in user confusion, since users then have to reconcile their inputs with your outputs!)
 
 ## License
 
