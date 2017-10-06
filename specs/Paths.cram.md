@@ -35,6 +35,19 @@ Ignores arguments to the left of an absolute path:
     $ @assert /etc realpath.absolute /etc
     $ @assert /etc/z/xq realpath.absolute x y z /etc/z q/../xq
 
+Doesn't turn on extglob (even though it uses it):
+
+    $ shopt -p extglob
+    shopt -u extglob
+    [1]
+
+But leaves it on if it's set:
+
+    $ shopt -s extglob
+    $ @assert "$PWD/x/y/z" realpath.absolute x y '' z/.
+    $ shopt -p extglob
+    shopt -s extglob
+
 ## realpath.relative path dir
 
 Outputs the relative path from dir to path:

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-realpath.location()  { realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
-realpath.resolved()  { realpath.follow "$1"; realpath.absolute "$REPLY"; }
-realpath.dirname() { if [[ $1 =~ /+[^/]+/*$ ]]; then REPLY="${1%${BASH_REMATCH}}"; REPLY=${REPLY:-/}; else REPLY=.; fi }
+realpath.location() { realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
+realpath.resolved() { realpath.follow "$1"; realpath.absolute "$REPLY"; }
+realpath.dirname()  { if [[ $1 =~ /+[^/]+/*$ ]]; then REPLY="${1%${BASH_REMATCH}}"; REPLY=${REPLY:-/}; else REPLY=.; fi }
 realpath.basename() { if [[ $1 =~ /*([^/]+)/*$ ]]; then REPLY="${BASH_REMATCH[1]}"; else REPLY=/; fi }
 
 realpath.follow() {
@@ -20,23 +20,14 @@ realpath.follow() {
 }
 
 realpath.absolute() {
-    set -- "$PWD" "$@"
-    while (($#>1)); do
-        case $2 in
-        /*) shift ;;                        # absolute paths don't get prefixed
-        *)  set -- "${1%/}/$2" "${@:3}" ;;  # join everything else
-        esac
-    done
-    IFS=/ eval 'set -- $1'    # normalize the path by splitting on /
-    set -- "${1:-/}" "${@:2}"   # and ensuring first element is a /
-    while (($#>1)); do
-        case $2 in
-        ''|.)  set -- "$1" "${@:3}" ;;  # no-op path
-        ..) realpath.dirname "$1"; set -- "$REPLY" "${@:3}" ;;
-        *)  set -- "${1%/}${2:+/$2}" "${@:3}" ;;
-        esac
-    done
-    REPLY="$1"
+    REPLY=$PWD; local no_eg; shopt -q extglob || { no_eg=y; shopt -s extglob; }
+    while (($#)); do case $1 in
+        /*) REPLY=/; set -- "${1##+(/)}" "${@:2}"; continue ;;
+        */*) set -- "${1%%/*}" "${1##${1%%/*}+(/)}" "${@:2}" ;;
+        ''|.) shift ;;
+        ..) realpath.dirname "$REPLY"; shift ;;
+        *) REPLY="${REPLY%/}/$1"; shift ;;
+    esac; done; ${no_eg:+shopt -u extglob}
 }
 
 realpath.canonical() {
