@@ -2,6 +2,8 @@
 
 realpath.location()  { realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
 realpath.resolved()  { realpath.follow "$1"; realpath.absolute "$REPLY"; }
+realpath.dirname() { if [[ $1 =~ /+[^/]+/*$ ]]; then REPLY="${1%${BASH_REMATCH}}"; REPLY=${REPLY:-/}; else REPLY=.; fi }
+realpath.basename() { if [[ $1 =~ /*([^/]+)/*$ ]]; then REPLY="${BASH_REMATCH[1]}"; else REPLY=/; fi }
 
 realpath.follow() {
     local target
@@ -16,7 +18,6 @@ realpath.follow() {
     done
     REPLY="$1"
 }
-
 
 realpath.absolute() {
     set -- "$PWD" "$@"
@@ -37,20 +38,6 @@ realpath.absolute() {
     done
     REPLY="$1"
 }
-
-
-realpath.dirname() {
-    while [[ $1 == *?/ ]]; do set -- "${1%/}"; done         # strip ending /
-    REPLY="${1%/*}"                                         # remove basename
-    [[ $REPLY == "$1" ]] && REPLY=. || REPLY=${REPLY:-/}    # handle . and /
-    while [[ $REPLY == *?/ ]]; do REPLY=${REPLY%/}; done    # strip ending /
-}
-
-realpath.basename() {
-    while [[ $1 == *?/ ]]; do set -- "${1%/}"; done
-    REPLY="${1##*/}"; if [[ "$1"  && ! "$REPLY" ]]; then REPLY=/; fi
-}
-
 
 realpath.canonical() {
     local target=""
