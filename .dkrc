@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-import: dk.cram                  # run tests using the "cram" functional test tool
-import: dk.entr-watch            # watch files and re-run tests or other commands
-import: dk.shell-console
+dk use: cram                  # run tests using the "cram" functional test tool
+dk use: entr-watch            # watch files and re-run tests or other commands
+dk use: shell-console
