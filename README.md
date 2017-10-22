@@ -10,6 +10,26 @@ Most of this module's functions also return absolute, well-formed paths: that is
 
 (**Note:** unlike their operating system counterparts, these functions do *not* accept options, and always return exactly **one** path as a result.  Do not pass `--` to them or expect to get multiple results for multiple arguments!)
 
+**Contents**
+
+<!-- toc -->
+
+  * [Installation, Requirements And Use](#installation-requirements-and-use)
+  * [Resolving Symlinks](#resolving-symlinks)
+    + [realpath.location](#realpathlocation)
+    + [realpath.resolved](#realpathresolved)
+    + [realpath.follow](#realpathfollow)
+  * [Path String Manipulation](#path-string-manipulation)
+    + [realpath.absolute *[paths...]*](#realpathabsolute-paths)
+    + [realpath.relative *path [basedir]*](#realpathrelative-path-basedir)
+    + [realpath.dirname](#realpathdirname)
+    + [realpath.basename](#realpathbasename)
+  * [Determinining Canonical Paths](#determinining-canonical-paths)
+    + [realpath.canonical](#realpathcanonical)
+- [License](#license)
+
+<!-- tocstop -->
+
 ### Installation, Requirements And Use
 
 Copy and paste the [code](realpaths) into your script, or place it on `PATH` and `source realpaths`.  (if you have [basher](https://github.com/basherpm/basher), you can `basher install bashup/realpaths` to get it installed on your `PATH`.)  The code is licensed CC0, so you are not required to add any attribution or copyright notices to your project.
