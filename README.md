@@ -2,7 +2,7 @@
 
 Sadly, it's hard to find a portable way to get the "real path" of a file, and shell-based emulations of `realpath ` and `readlink -f` are usually quite slow compared to the real thing, and don't return *quite* the same results.  (Dealing with missing elements, symlink loops, and the like can also be a challenge, even with the "real" `readlink` or `realpath`!)
 
-So, this module is a thorough implementation of symlink resolution and path canonicalization using plain, portable `readlink` with no options.  Its symlink resolution is about as fast as `readlink -f` when there is only one symlink to follow, and *enormously* faster when the target isn't a symlink.  (It's slower on symlink chains, though.)
+So, this module is a thorough implementation of symlink resolution and path canonicalization (for bash 3.2 and up) using plain, portable `readlink` with no options.  Its symlink resolution is about as fast as `readlink -f` when there is only one symlink to follow, and *enormously* faster when the target isn't a symlink.  (It's slower on symlink chains, though.)
 
 To avoid the need for subshells, all of this module's functions output a single path result via the bash `REPLY` variable.  All functions return success, *always*, as they are designed to provide meaningful results even in the presence of missing, looping, or inaccessible files, symlinks, or directories.
 
