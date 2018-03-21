@@ -31,12 +31,11 @@ realpath.absolute() {
 }
 
 realpath.canonical() {
-    local target=""
     realpath.follow "$1"; set -- "$REPLY"   # $1 is now resolved
-    realpath.basename "$1"; target=$REPLY   # target = basename $1
-    realpath.dirname "$1";
+    realpath.basename "$1"; set -- "$1" "$REPLY"   # $2 = basename $1
+    realpath.dirname "$1"
     [[ $REPLY != "$1" ]] && realpath.canonical "$REPLY"; # recurse unless root
-    realpath.absolute "$REPLY" "$target";   # combine canon parent w/basename
+    realpath.absolute "$REPLY" "$2";   # combine canon parent w/basename
 }
 
 realpath.relative() {
@@ -48,4 +47,3 @@ realpath.relative() {
     [[ $1 == "$REPLY" ]] && REPLY=${target%/} || REPLY="$target${1#${REPLY%/}/}"
     REPLY=${REPLY:-.}
 }
-
