@@ -1,33 +1,33 @@
 #!/usr/bin/env bash
 
-realpath.location() { realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
-realpath.resolved() { realpath.follow "$1"; realpath.absolute "$REPLY"; }
-realpath.dirname()  { if [[ $1 =~ /+[^/]+/*$ ]]; then REPLY="${1%${BASH_REMATCH}}"; REPLY=${REPLY:-/}; else REPLY=.; fi }
-realpath.basename() { if [[ $1 =~ /*([^/]+)/*$ ]]; then REPLY="${BASH_REMATCH[1]}"; else REPLY=/; fi }
+realpath.location(){ realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
+realpath.resolved(){ realpath.follow "$1"; realpath.absolute "$REPLY"; }
+realpath.dirname() { if [[ $1 =~ /+[^/]+/*$ ]]; then REPLY="${1%${BASH_REMATCH[0]}}"; REPLY=${REPLY:-/}; else REPLY=.; fi }
+realpath.basename(){ if [[ $1 =~ /*([^/]+)/*$ ]]; then REPLY="${BASH_REMATCH[1]}"; else REPLY=/; fi }
 
 realpath.follow() {
 	local target
 	while [[ -L "$1" ]] && target=$(readlink -- "$1"); do
 		realpath.dirname "$1"
-		# Resolve symlink target relative to symlink's directory
+		# Resolve relative to symlink's directory
 		[[ $REPLY != . && $target != /* ]] && REPLY=$REPLY/$target || REPLY=$target
 		# Break out if we found a symlink loop
 		for target; do [[ $REPLY == "$target" ]] && break 2; done
-		# Add current result to the loop-detect list and tail-recurse
+		# Add to the loop-detect list and tail-recurse
 		set -- "$REPLY" "$@"
 	done
 	REPLY="$1"
 }
 
 realpath.absolute() {
-	REPLY=$PWD; local no_eg; shopt -q extglob || { no_eg=y; shopt -s extglob; }
+	REPLY=$PWD; local eg=extglob; ! shopt -q $eg || eg=; ${eg:+shopt -s $eg}
 	while (($#)); do case $1 in
 		/*) REPLY=/; set -- "${1##+(/)}" "${@:2}" ;;
 		*/*) set -- "${1%%/*}" "${1##${1%%/*}+(/)}" "${@:2}" ;;
 		''|.) shift ;;
 		..) realpath.dirname "$REPLY"; shift ;;
 		*) REPLY="${REPLY%/}/$1"; shift ;;
-	esac; done; ${no_eg:+shopt -u extglob}
+	esac; done; ${eg:+shopt -u $eg}
 }
 
 realpath.canonical() {
