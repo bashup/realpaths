@@ -62,6 +62,8 @@ Each path may be absolute or relative.  The resulting path is the combination of
 
 Relative path parts are resolved *logically* rather than physically.  That is to say, `..` is processed by removing elements from the path string, rather than by inspecting the filesystem.  (So symlinks are not processed in any way, and the existence or accessibility of the files and directories is irrelevant: with the exception of defaulting to `$PWD`, the result is obtained solely via string manipulation of the supplied paths.)
 
+As per POSIX, bash, Python, and other path handling libraries, absolute paths beginning with *exactly* two slashes are treated specially.  The string returned by `realpath.absolute` will begin with two slashes if the last absolute path argument began with exactly two slashes; otherwise the result will begin with only one slash, no matter how many slashes the last absolute path argument began with.
+
 #### realpath.relative *path [basedir]*
 
 Sets `REPLY` to the shortest relative path from *basedir* to *path*.  *basedir* defaults to `$PWD` if not supplied.  Always succeeds.

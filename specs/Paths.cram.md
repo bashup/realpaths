@@ -35,6 +35,12 @@ Ignores arguments to the left of an absolute path:
     $ @assert /etc realpath.absolute /etc
     $ @assert /etc/z/xq realpath.absolute x y z /etc/z q/../xq
 
+Preserves double (but not triple+) slashes at the beginning of an absolute path:
+
+    $ @assert //server/share/blah realpath.absolute //server share blah/
+    $ @assert /server/share/blah  realpath.absolute ///server/share blah
+    $ @assert /server/share/blah  realpath.absolute ////server/share blah
+
 Doesn't turn on extglob (even though it uses it):
 
     $ shopt -p extglob
