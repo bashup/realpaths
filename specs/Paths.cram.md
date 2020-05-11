@@ -15,6 +15,7 @@ realpath.dirname and realpath.basename should produce the same results as their 
     > for p5 in '' / // /// /. /..; do
     > @check "$p1$p2$p3$p4$p5"
     > done; done; done; done; done
+    > @check '//'
 
 ## realpath.absolute
 
