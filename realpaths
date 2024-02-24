@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 realpath.location(){ realpath.follow "$1"; realpath.absolute "$REPLY" ".."; }
 realpath.resolved(){ realpath.follow "$1"; realpath.absolute "$REPLY"; }
-realpath.dirname() { REPLY=.; ! [[ $1 =~ /+[^/]+/*$|^//$ ]] || REPLY="${1%${BASH_REMATCH[0]}}"; REPLY=${REPLY:-/}; }
+realpath.dirname() { REPLY=.; ! [[ $1 =~ /+[^/]+/*$|^//$ ]] || REPLY="${1%"${BASH_REMATCH[0]}"}"; REPLY=${REPLY:-/}; }
 realpath.basename(){ REPLY=/; ! [[ $1 =~ /*([^/]+)/*$ ]] || REPLY="${BASH_REMATCH[1]}"; }
 
 realpath.follow() {
@@ -41,9 +41,9 @@ realpath.canonical() {
 realpath.relative() {
 	local target=""
 	realpath.absolute "$1"; set -- "$REPLY" "${@:2}"; realpath.absolute "${2-$PWD}" X
-	while realpath.dirname "$REPLY"; [[ "$1" != "$REPLY" && "$1" == "${1#${REPLY%/}/}" ]]; do
+	while realpath.dirname "$REPLY"; [[ "$1" != "$REPLY" && "$1" == "${1#"${REPLY%/}"/}" ]]; do
 		target=../$target
 	done
-	[[ $1 == "$REPLY" ]] && REPLY=${target%/} || REPLY="$target${1#${REPLY%/}/}"
+	[[ $1 == "$REPLY" ]] && REPLY=${target%/} || REPLY="$target${1#"${REPLY%/}"/}"
 	REPLY=${REPLY:-.}
 }
