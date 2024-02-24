@@ -23,7 +23,7 @@ realpath.absolute() {
 	while (($#)); do case $1 in
 		//|//[^/]*) REPLY=//; set -- "${1:2}" "${@:2}" ;;
 		/*) REPLY=/; set -- "${1##+(/)}" "${@:2}" ;;
-		*/*) set -- "${1%%/*}" "${1##${1%%/*}+(/)}" "${@:2}" ;;
+		*/*) set -- "${1%%/*}" "${1##"${1%%/*}"+(/)}" "${@:2}" ;;
 		''|.) shift ;;
 		..) realpath.dirname "$REPLY"; shift ;;
 		*) REPLY="${REPLY%/}/$1"; shift ;;

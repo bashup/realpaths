@@ -42,6 +42,10 @@ Preserves double (but not triple+) slashes at the beginning of an absolute path:
     $ @assert /server/share/blah  realpath.absolute ///server/share blah
     $ @assert /server/share/blah  realpath.absolute ////server/share blah
 
+Handles brackets in filenames:
+
+    $ @assert "$PWD/components/web-app/src/app/[lang]/__tests__/page-test.tsx" realpath.absolute "components/web-app/src/app/[lang]/__tests__/page-test.tsx"
+
 Doesn't turn on extglob (even though it uses it):
 
     $ shopt -p extglob
