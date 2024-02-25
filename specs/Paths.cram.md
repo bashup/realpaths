@@ -66,13 +66,15 @@ But leaves it on if it's set:
 
 Outputs the relative path from dir to path:
 
-    $ @assert y             realpath.relative y .
-    $ @assert y             realpath.relative x/y x
-    $ @assert ../y          realpath.relative y x
-    $ @assert ../y/z        realpath.relative a/y/z a/x
-    $ @assert ../../y       realpath.relative y a/x
-    $ @assert ../../../y    realpath.relative y a/b/x
-    $ @assert ../../../y    realpath.relative y 'a/[f]/(.)x'
+    $ @assert y            realpath.relative y .
+    $ @assert y            realpath.relative x/y x
+    $ @assert ../y         realpath.relative y x
+    $ @assert ../y/z       realpath.relative a/y/z a/x
+    $ @assert ../../y      realpath.relative y a/x
+    $ @assert ../../../y   realpath.relative y a/b/x
+    $ @assert ../../../y   realpath.relative y 'a/[f]/(.)x'
+    $ @assert 'a/[f]/(.)x' realpath.relative 'a/[f]/(.)x' .
+    $ @assert y            realpath.relative 'a/[f]/(.)x/y' 'a/[f]/(.)x'
 
 Avoids redundancy for common path elements:
 
