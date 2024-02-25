@@ -16,6 +16,8 @@ realpath.dirname and realpath.basename should produce the same results as their 
     > @check "$p1$p2$p3$p4$p5"
     > done; done; done; done; done
     > @check '//'
+    > @check 'foo/[bar]/baz.txt'
+    > @check 'foo/(..)bar/bar.txt'
 
 ## realpath.absolute
 
@@ -42,9 +44,10 @@ Preserves double (but not triple+) slashes at the beginning of an absolute path:
     $ @assert /server/share/blah  realpath.absolute ///server/share blah
     $ @assert /server/share/blah  realpath.absolute ////server/share blah
 
-Handles brackets in filenames:
+Handles special chars in filenames:
 
-    $ @assert "$PWD/components/web-app/src/app/[lang]/__tests__/page-test.tsx" realpath.absolute "components/web-app/src/app/[lang]/__tests__/page-test.tsx"
+    $ @assert "$PWD/foo/[bar]/baz.txt" realpath.absolute "foo/[bar]/baz.txt"
+    $ @assert "$PWD/foo/(..)bar/baz.txt" realpath.absolute "foo/(..)bar/baz.txt"
 
 Doesn't turn on extglob (even though it uses it):
 
@@ -63,12 +66,15 @@ But leaves it on if it's set:
 
 Outputs the relative path from dir to path:
 
-    $ @assert y             realpath.relative y .
-    $ @assert y             realpath.relative x/y x
-    $ @assert ../y          realpath.relative y x
-    $ @assert ../y/z        realpath.relative a/y/z a/x
-    $ @assert ../../y       realpath.relative y a/x
-    $ @assert ../../../y    realpath.relative y a/b/x
+    $ @assert y            realpath.relative y .
+    $ @assert y            realpath.relative x/y x
+    $ @assert ../y         realpath.relative y x
+    $ @assert ../y/z       realpath.relative a/y/z a/x
+    $ @assert ../../y      realpath.relative y a/x
+    $ @assert ../../../y   realpath.relative y a/b/x
+    $ @assert ../../../y   realpath.relative y 'a/[f]/(.)x'
+    $ @assert 'a/[f]/(.)x' realpath.relative 'a/[f]/(.)x' .
+    $ @assert y            realpath.relative 'a/[f]/(.)x/y' 'a/[f]/(.)x'
 
 Avoids redundancy for common path elements:
 
@@ -168,17 +174,24 @@ Absolute links and directories:
     $ @assert "$PWD/y" realpath.canonical q/../x
     $ @assert "$PWD/z/a" realpath.canonical q/a
 
+Special chars in filenames:
+
+    $ @assert "$PWD/foo/[bar]/baz.txt" realpath.canonical "foo/[bar]/baz.txt"
+    $ @assert "$PWD/foo/(..)bar/baz.txt" realpath.canonical "foo/(..)bar/baz.txt"
+
 ### realpath.location
 
 Returns the absolute (but not canonical) location of the directory physically containing its target.  Is equivalent to `realpath.absolute` if target isn't a symlink:
 
-    $ @assert "$PWD"       realpath.location x
-    $ @assert "$PWD"       realpath.location z
-    $ @assert "$PWD/z"     realpath.location z/a
-    $ @assert "$PWD"       realpath.location q/x  # -> ../x
-    $ @assert "$PWD/q"     realpath.location q/foo
-    $ @assert "$PWD"       realpath.location q/../foo
-    $ @assert "$PWD/q/foo" realpath.location q/foo/bar
+    $ @assert "$PWD"         realpath.location x
+    $ @assert "$PWD"         realpath.location z
+    $ @assert "$PWD/z"       realpath.location z/a
+    $ @assert "$PWD"         realpath.location q/x  # -> ../x
+    $ @assert "$PWD/q"       realpath.location q/foo
+    $ @assert "$PWD"         realpath.location q/../foo
+    $ @assert "$PWD/q/foo"   realpath.location q/foo/bar
+    $ @assert "$PWD/q/[z]"   realpath.location q/[z]/bar
+    $ @assert "$PWD/q/(..)z" realpath.location "q/(..)z/bar"
 
 ### Missing elements
 
